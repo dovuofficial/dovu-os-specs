@@ -29,7 +29,7 @@ We support two parallel but **structurally identical** contexts:
 
 ---
 
-## Why HCS matters
+## Using HCS as a data stream module
 
 DOVU OS enforces that all ingested behaviours for a given **blueprint instance** are published into a **linear queue (HCS topic)**. This ensures:
 
