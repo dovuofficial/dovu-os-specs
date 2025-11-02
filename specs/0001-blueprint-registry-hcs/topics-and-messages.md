@@ -1,5 +1,7 @@
 # Blueprint Registry — HCS Topics and Message Structure
 
+__Probably needs updating here__
+
 This document defines the **Hedera Consensus Service (HCS)** topics and message envelopes used for the **Blueprint Registry**.
 
 Each topic represents a verifiable, append-only log that encodes either:
@@ -115,7 +117,7 @@ That topic is append-only and gated by the same submit-key as its parent list to
 
 ```json
 {
-  "t": "workflow-version@1",
+  "t": "workflow-version-create@1",
   "filesTopicId": "0.0.890321",
   "tags": "v1.0.0"
 }

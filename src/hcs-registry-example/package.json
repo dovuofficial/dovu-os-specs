@@ -1,0 +1,21 @@
+{
+  "name": "dovu-hcs-registry-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "cli.js",
+  "scripts": {
+    "dev": "node cli.js --help",
+    "test": "jest --runInBand",
+    "test:e2e": "HEDERA_E2E=1 jest __tests__/e2e.testnet.spec.js --runInBand"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.69.0",
+    "dotenv": "^16.4.5",
+    "yargs": "^17.7.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
