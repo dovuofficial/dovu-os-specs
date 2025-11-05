@@ -33,7 +33,7 @@ This is the topic where anyone can register to be an author for registering blue
 
 
 ```shell
-node cli.js create-root-topic
+bun cli.js create-root-topic
 ```
 
 # 1) Create Author Workflow List Topic (returns topicId)
@@ -43,7 +43,7 @@ This is an Author topic that can register new blueprints and create new versions
 __Potentially__ consider that an "author workflow" as an unregistered entity is "private"
 
 ```shell
-node cli.js create-author-topic --slug dovu-labs
+bun cli.js create-author-topic --slug dovu-labs
 ```
 
 # 2) Register Author Topic on Root (needs preexisting author topic id)
@@ -53,7 +53,7 @@ This would enable an author to be discoverable.
 __This may be tied to a payment in DOVU tokens in the future to reduce spam when sending a HCS message.__
 
 ```shell
-node cli.js register-author-topic \
+bun cli.js register-author-topic \
 --rootTopicId 0.0.7107142 \
 --slug dovu-labs \
 --authorTopicId 0.0.7106954 \

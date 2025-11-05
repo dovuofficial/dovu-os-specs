@@ -1,38 +1,18 @@
-import {createTopic, submitMessage} from "./hedera.js";
-import {buildRootPointerMessage, encodeCanonical} from "./messages.js";
-
-/**
- * Definitions of operations for certain topic and message creation in relation to the blueprint registry context
- */
-const operation = {
-  REGISTER: {
-    AUTHOR: {
-      v1: "author-register@1"
-    },
-
-    WORKFLOW: {
-      v1: "workflow-register@1"
-    },
-  },
-
-  APPEND: {
-    VERSION: {
-      v1: "workflow-version-create@1"
-    }
-  }
-}
+import {createTopic, getHederaPublicKey, submitMessage} from "./hedera.js";
+import {buildRootPointerMessage, buildWorkflowRegister, buildWorkflowVersion, encodeCanonical} from "./messages.js";
+import {sha256, signEd25519Hex} from "./crypto.js";
 
 /**
  * Topic creation
  */
 
-const createRootTopic = async (memo = "DOVU OS Registry Topic") =>
+export const createRootTopic = async (memo = "DOVU OS Registry Topic") =>
   createTopic({ memo })
 
-const createAuthorTopic = async (memo = "DOVU OS Author Topic") =>
+export const createAuthorTopic = async (memo = "DOVU OS Author Topic") =>
   createTopic({ memo })
 
-const createWorkflowTopic = async (memo = "DOVU OS Workflow Topic") =>
+export const createWorkflowTopic = async (memo = "DOVU OS Workflow Topic") =>
   createTopic({ memo })
 
 // Later this topic would relate to eliminating the need for IPFS CIDs
@@ -54,27 +34,52 @@ const createWorkflowTopic = async (memo = "DOVU OS Workflow Topic") =>
  *    alg
  *  }
  */
-const registerAuthorTopic = async (rootTopicId, authorPayload) => {
+export const registerAuthorTopic = async (rootTopicId, authorPayload) => {
 
-  const payload = buildRootPointerMessage({
-    t: operation.REGISTER.AUTHOR,
-    ...authorPayload,
-  });
+    const publicKey = getHederaPublicKey();
+    const digest = sha256(authorPayload.txId);
+    const sigHex = signEd25519Hex(process.env.HEDERA_PRIVATE_KEY, digest);
 
-  return submitMessage(rootTopicId, encodeCanonical(payload));
+    const sigPayload = {
+        ownerPubKey: publicKey,
+        sig: sigHex,
+        alg: "ED25519" // Implied default
+    }
+
+    const payload = buildRootPointerMessage({
+        ...sigPayload,
+        ...authorPayload,
+    });
+
+    return submitMessage(rootTopicId, encodeCanonical(payload));
 }
 
-const createAuthorInstance = async () => {
+/**
+ * workflowPayload format
+ * {
+ *    slug,
+ *    title,
+ *    workflowTopicId
+ *  }
+ */
+export const registerWorkflowTopic = async (authorTopicId, workflowPayload) => {
 
+    const payload = buildWorkflowRegister(workflowPayload);
+
+    return submitMessage(authorTopicId, encodeCanonical(payload));
 }
 
+/**
+ * workflowVersionPayload format (v1 IPFS)
+ * {
+ *    type,
+ *    content,
+ *  }
+ */
+export const appendWorkflowVersion = async (workflowTopicId, versionPayload) => {
 
+    const payload = buildWorkflowVersion(versionPayload);
 
-export default {
-  createRootTopic,
-  createAuthorTopic,
-  createWorkflowTopic,
-  registerAuthorTopic,
-};
-
+    return submitMessage(workflowTopicId, encodeCanonical(payload));
+}
 
